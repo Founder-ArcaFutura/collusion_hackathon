@@ -1,5 +1,15 @@
 # Endogenous defection after a private cost shock
 
+## Pre-sprint work disclosure
+
+The upstream double-auction implementation and agent framework, plus the initial
+endogenous-defection apparatus and baseline work documented below, predate the
+24–25 October 2026 AI Collusion Research Sprint. Sprint-period work added the
+rival-quote visibility intervention, communication-by-visibility experiments,
+quote-distortion pilot, paired quote probe, related analyses, and the review
+packet under publication/sprint_20261024/. The sprint manuscript distinguishes
+these new analyses from the pre-existing platform and apparatus.
+
 **Latest sprint workflow:** the exploratory concentration screen is complete. The information × communication study and reusable review/analysis scripts are documented in [NEXT_RUN.md](NEXT_RUN.md). The new four-cell study has passed offline validation; live execution is a separate explicit command. Historical status notes below are retained as provenance.
 
 **Baseline A v1 attempts failed technically; repaired v2 has conditional user approval:** [BASELINE_REVIEW.md](BASELINE_REVIEW.md)

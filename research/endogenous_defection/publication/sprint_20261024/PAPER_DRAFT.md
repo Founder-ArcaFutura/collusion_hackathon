@@ -1,104 +1,114 @@
-# Communication, Visibility and Corrupted Information in LLM Double Auctions
+# Communication, Visibility, and Corrupted Information in LLM Double Auctions
 
-Research sprint manuscript draft, 24 October 2026. Complete prose draft of available results; not submission-ready. Truthful Lambda controls are pending in this local freeze. Exhaustive message coding, verified literature references, author details and venue formatting remain to be completed.
+**Authors:** [Add author names and affiliations before PDF export]
 
 ## Abstract
 
-We study how communication interacts with market information in repeated double auctions populated by Qwen2.5-7B-Instruct agents. Four matched seed blocks cross seller communication with full versus partially masked rival-ask visibility, yielding 16 completed ten-round markets and 1,600 accepted decisions. Communication's effect on trade count is more positive under partial visibility in every block: interactions are +1, +7, +3 and +13 trades. Price interactions vary in direction, and no completed market passes the implemented sustained-high-price criterion. An exploratory corruption pilot produces divergent market trajectories. A paired decision test yields 48 valid responses, showing sensitivity to quote interventions in some states and invariant asks in another. Messages include accurate self-price reports reaching recipients whose direct histories omit those orders; this does not establish informational novelty or causal mediation. Results motivate treating information availability and integrity as important conditions of agent communication, while small samples and technical failures limit generalization.
+We study how seller communication interacts with public quote visibility in repeated LLM double auctions. Four matched seed blocks cross communication ON/OFF with full/partial visibility of rival asks, producing 16 completed ten-round markets and 1,600 accepted decisions. Communication’s trade-count interaction (partial-minus-full visibility difference in the ON-minus-OFF effect) is +1, +7, +3, and +13 trades; the mean is +6.0 (sample SD 5.29; illustrative 95% t interval −2.4 to +14.4). This exploratory estimate is imprecise and does not establish a population effect. Communication ON also changes the prompt and required output fields, so this is a communication-enabled protocol contrast, not an isolated information-channel intervention. The synchronous, batch-updated CDA-style markets did not meet the specified sustained-high-price gate. Verified examples show one self-price report hidden from recipients’ current and historical displays; they do not establish reliance or causal mediation. Four supplemental Lambda truthful controls now permit same-provider comparisons with quote-distortion runs, though host instances differ. Corruption and paired quote probes show heterogeneous responses. Results motivate studying information conditions in agent markets, but do not establish collusion or a general propensity to collude.
 
 ## 1. Introduction
 
-Communication can report prices, recommend competitive adjustments or sustain common price references. Consequently, enabling a channel does not determine whether its effects will be competitive or anticompetitive. Public information may make messages redundant; missing or misleading information may change their role.
+Communication can transmit price observations, recommend competitive adjustments, or help sustain common price references. The effect of a message therefore depends on what recipients already observe and on how the communication treatment changes their decision context. Prior work finds that direct seller communication can increase collusive tendencies in double auctions [1], studies how asymmetric data access can make AI-agent collusion fragile [2], and tests cheap talk in AI-agent prediction markets where information aggregation is the outcome [3]. These settings and outcomes differ from the liquidity interaction studied here.
 
-This sprint began with sustained high pricing and possible collusion as its motivating question. Completed runs did not establish the intended high-price positive control. Subsequent experiments varied the information environment. These follow-ups are exploratory, motivated by earlier observations, and not a prospectively confirmatory programme. We ask whether communication's effect depends on visibility, and whether changing quote content changes immediate seller actions. We do not test whether LLMs integrate more information than humans.
+This sprint began from a high-price collusion question. A completed live exploratory baseline using Qwen2.5-7B-Instruct made 200 requests across two seeds but passed the specified sustained-high-price gate in 0 of 2 seeds. That is a failed positive-control gate for this model and setup, not evidence that collusion is absent generally. The information-by-communication experiment and subsequent corruption/probe analyses are exploratory follow-ups. They ask whether the observed communication effect on trade completion varies with rival-ask visibility, and whether selected seller actions respond to quote perturbations.
+
+Our contribution is narrow: a factorial intervention on quote visibility and a communication-enabled protocol, with trade count as a liquidity outcome, plus selected evidence about message availability and quote sensitivity. We do not test whether LLMs possess broader information than humans or whether messages caused the observed market interaction.
 
 ## 2. Methods
 
-### Market and inference
+### Market and protocol
 
-Each main market has five unit-capacity sellers with cost $80 and five buyers with value $100. Over ten disclosed rounds, agents propose orders using market history, own memory and realized trades. Public inputs are frozen before a round's decisions are collected. Genuine crossing orders clear at midpoint prices. Enabled seller messages arrive the following round; buyer communication is disabled.
+Each market has five unit-capacity sellers with a fixed cost of $80 and five buyers with a fixed value of $100. Markets run for ten rounds. In each round, all ten agents submit decisions against the same pre-round market state; only after the full batch is collected are orders applied and crossing orders cleared. We therefore describe the mechanism as a synchronous, batch-updated double auction with CDA-style matching, not as continuous asynchronous decision-making. Executed trades clear at the midpoint under the unchanged matching engine. Agents observe market histories, their own memory, and realized transactions.
 
-The main runs use Qwen/Qwen2.5-7B-Instruct, temperature 0.7, a 1,200-token budget, guided JSON, vLLM 0.6.6, Outlines 0.1.11 and XGrammar 0.1.13. Sampling seeds are paired across cells by market seed, role and round; paired seeds do not guarantee numerical determinism across executions. A maximum of two attempts allows bounded recovery from malformed or length-truncated output. Semantic violations and transport failures are not silently repaired. Raw prompts, responses and failures are retained.
+The main runs use Qwen/Qwen2.5-7B-Instruct, temperature 0.7, a 1,200-token output budget, guided JSON, vLLM 0.6.6, Outlines 0.1.11, and XGrammar 0.1.13. Sampling seeds are paired across cells by market seed, role, and round. Paired seeds do not ensure identical outputs across executions. The runner permits at most two bounded recovery attempts for malformed or length-truncated output; semantic violations and transport failures are not silently repaired. Prompts, responses, and failed attempts are retained in the raw bundles.
 
-### Factorial design and outcomes
+### Factorial visibility and communication study
 
-Four cells cross full/partial rival-ask visibility with communication ON/OFF. Partial visibility deterministically omits approximately half of rival seller quotes from current and historical displays, using a hash of market seed, observer, owner and quote-origin round. Own quotes, buyer bids and realized trades remain available. True matching is unchanged. Both visibility conditions carry the same disclosure about possible omissions. Run order reverses in alternating seed blocks.
+The design crosses seller communication ON/OFF with full/partial visibility of rival seller asks. Buyers do not communicate. In partial visibility, a deterministic hash of market seed, observer, quote owner, and quote-origin round omits approximately half of rival seller quotes from the observer’s current and historical displays. Own quotes, buyer bids, realized trades, and true matching remain unchanged. Both visibility conditions disclose that displayed quote lists may omit rival asks.
 
-Seeds 20–23 complete all four cells. These constitute four matched seed blocks, not 1,600 independent treatment observations. The trade-count interaction is (partial ON minus partial OFF) minus (full ON minus full OFF). We report per-seed contrasts without trade-level significance tests or equivalence claims. Executed price is conditional on which orders trade, so it is distinguished from submitted asks.
+Communication ON enables next-round seller messages and also changes the prompt and required output fields. Thus the estimand is the effect of the communication-enabled protocol, including those prompt/output differences; it does not isolate message receipt as the sole causal component. Messages sent in round t become available in round t+1.
 
-The high-price gate uses the implemented symmetric-market competitive reference interval [$80,$100], its midpoint $90 as a reporting convention, and joint-profit reference $100. All seller asks and mean executed price must strictly exceed $95 with at least one trade in each of the final five rounds. This is a price/trade proxy, not a sufficient definition of cartel conduct. The midpoint is not a unique competitive-equilibrium prediction.
+Seeds 20–23 completed all four cells, giving four matched seed blocks and 16 markets. Seed 24’s full-visibility/communication-on cell failed before completing a round; its remaining cells and later planned seeds were not attempted. The failed cell remains in the evidence inventory and is excluded from completed-market contrasts. The per-seed interaction for a metric is (partial ON − partial OFF) − (full ON − full OFF). We report seed-level descriptive contrasts rather than treating 1,600 decisions as independent treatment units.
 
-### Extensions
+### Outcomes and high-price gate
 
-The Lambda distortion pilot runs seeds 20/21 with communication ON/OFF, inflating selected rival asks by exactly $10 in current and historical displays. Current displays are sorted by shown price. Own quotes, buyer views and genuine matching are unchanged; values are not clipped. Four markets complete 400 decisions without recovery. Historical truthful controls ran on Modal; new Lambda truthful controls have been launched but are not yet incorporated here. Provider/hardware differences remain confounded with treatment in the initial comparison.
+The primary outcome is number of trades per ten-round market. We also report mean executed trade price, submitted asks, seller profit, buyer surplus, and total realized welfare. With fixed seller cost $80 and buyer value $100, each trade contributes exactly $20 of realized surplus, so total welfare equals $20 multiplied by trade count and is not independent corroborating evidence.
 
-The paired probe selects four saved truthful communication-ON seller states: seeds 20/21 at rounds 2/5, taking the alphabetically first seller with a rival quote, then the lowest-priced rival quote. Each state is shown truthfully, masked, $10 higher or $10 lower under three matched sampling seeds: 48 decisions plus one separate warmup. History, messages, memory and other entries remain fixed. Current-book ordering is fixed too, so altered values can conflict with ordering. The probe tests a current-entry perturbation, not consistent corruption of an entire history or representative sensitivity across all sellers.
+The sustained-high-price gate requires all active sellers’ asks to exceed $95, mean executed price to exceed $95, and at least one trade in each of the final five rounds. This is an operational threshold for this experiment, not a comprehensive definition or detector of collusion. Failure to pass means only that the specified gate was not met.
 
-### Message analysis and evidence
+### Quote distortion and paired decision probe
 
-All nonempty seller messages are extracted from completed communication-enabled markets. Explicit dollar amounts are matched to actual quotes hidden from each recipient's next-round historical display. Final-round messages have no measured subsequent response. Numerical matches are candidates for semantic review, not confirmed factual transfers. Referent, accuracy, prior knowledge and recipient action must be considered separately.
+A supplemental Lambda pilot uses seeds 20/21 with communication ON/OFF. In distortion-on cells, selected rival asks are displayed $10 higher in current and historical views; own quotes, buyer views, and true matching are unchanged. Four distortion markets each complete ten rounds and 100 accepted decisions. Four truthful full-visibility controls for the same seeds and communication conditions also completed on Lambda. The runs use the same provider, GPU class, model, and serving/software versions, but distinct host instances; residual instance-level variation remains possible.
 
-Original market bundles are checksum-verified and unchanged. Derived evidence is stored separately. In the paired test, the worker sealed the directory before the host log closed. All sealed decision/response files still match; host.log changed and host_exit.json was added. This packaging limitation is disclosed rather than treating the initial root seal as valid.
+The paired quote probe selects four saved truthful communication-on seller states: seeds 20/21 at rounds 2/5, choosing the alphabetically first seller with a rival quote and then the lowest-priced rival quote. At each state, it varies the current quote entry (truthful, masked, $10 higher, or $10 lower) under three matched sampling seeds, for 48 decisions plus one warmup. History, messages, memory, and other entries remain fixed. Current-book ordering is fixed, so perturbed values can conflict with ordering. These selected states are not representative samples of all sellers or market states.
 
 ## 3. Results
 
-### Trading activity
+### Communication and visibility
 
-| Seed | Full ON trades | Full OFF | Partial ON | Partial OFF | Interaction |
-|---|---:|---:|---:|---:|---:|
-| 20 | 26 | 27 | 18 | 18 | +1 |
-| 21 | 35 | 34 | 33 | 25 | +7 |
-| 22 | 28 | 30 | 26 | 25 | +3 |
-| 23 | 22 | 29 | 30 | 24 | +13 |
+The trade-count interactions by seed are +1, +7, +3, and +13. Their equal-seed mean is +6.0 trades per ten-round market, with sample SD 5.29. An illustrative two-sided 95% t interval using four blocks is approximately −2.4 to +14.4 trades. Given the small number of blocks and exploratory, data-informed hypothesis, this interval is descriptive and does not support a formal population-effect claim.
 
-Communication changes full-visibility trade counts by −1, +1, −2 and −7, versus 0, +8, +1 and +6 under partial visibility. The interaction averages +6 trades per ten-round market, or 12 percentage points of the 50-trade maximum. This is an equal-seed descriptive mean with substantial heterogeneity, not a precise population estimate.
+Communication ON/OFF markets total 111/120 trades under full visibility and 107/92 under partial visibility. Partial visibility did not uniformly reduce liquidity: in seed 23 communication-on markets, partial visibility produced 30 trades versus 22 with full visibility. The interaction’s direction is consistent across the four completed seed blocks, while its magnitude is uncertain.
 
-Full ON/OFF markets total 111/120 trades; partial ON/OFF total 107/92. Masking does not always reduce liquidity: seed 23 ON executes 30 trades under partial visibility versus 22 under full visibility. The communication interaction is more consistent than a universal masking penalty.
+Price interactions are approximately −$3.07, +$2.95, +$0.03, and −$3.17. Equal-seed mean prices are $85.85 (full ON), $85.04 (full OFF), $84.15 (partial ON), and $84.15 (partial OFF). These are means of market means, not trade-weighted pooled prices. None of the 16 completed factorial markets passed the specified sustained-high-price gate. This does not establish that no collusive behavior occurred under other definitions or in other settings.
 
-### Prices and gates
+### Positive control and quote distortion
 
-Price interactions are approximately −$3.07, +$2.95, +$0.03 and −$3.17. Equal-seed mean market prices are $85.85 full ON, $85.04 full OFF, $84.15 partial ON and $84.15 partial OFF. These are not trade-weighted pooled prices. None of the 16 completed factorial markets passes the sustained-high-price gate. The data support a descriptive trade-volume interaction more clearly than a stable price-raising effect.
+The earlier live high-price baseline completed 200/200 requests over two seeds but passed the gate in 0/2 seeds. Every active ask in the evaluated final windows was below $95; the price criteria failed while the final-window trade-count criterion passed. This is a completed but unsuccessful positive control for the intended high-price outcome. Separately, scripted synthetic controls validate software plumbing only and are not behavioral evidence.
+
+The four completed Lambda truthful controls and four distortion markets are summarized below. Values are mean executed prices and trade counts. Distortion-minus-truthful differences vary substantially across the two seeds and do not show a consistent directional response.
+
+| Seed | Communication | Truthful price / trades | Distorted price / trades | Price difference | Trade difference |
+|---|---|---:|---:|---:|---:|
+| 20 | ON | $85.35 / 26 | $92.31 / 28 | +$6.96 | +2 |
+| 20 | OFF | $82.85 / 27 | $83.08 / 26 | +$0.23 | −1 |
+| 21 | ON | $86.62 / 35 | $83.66 / 20 | −$2.96 | −15 |
+| 21 | OFF | $88.91 / 34 | $87.66 / 24 | −$1.25 | −10 |
+
+These are small, seed-specific supplementary comparisons, not a powered estimate of a general corruption effect. Because the runs used distinct host instances, shared provider/model/runtime does not remove all possible system-level differences.
 
 ### Message evidence
 
-The eight communication-enabled markets contain 374 nonempty messages: 183 full and 191 partial. Explicit dollar amounts appear in 135 and 155 respectively. In partial visibility, 124 messages yield 302 recipient/quote matches to hidden asks. Of these, 106 messages yield 221 rows matching the sender's own order. These counts do not establish 106 factual relays: recommendations, coincidental amounts and multiple recipients generate matches. Full visibility has no masked-quote matches by construction.
+The mechanical inventory contains 374 nonempty messages (183 full-visibility and 191 partial-visibility). It finds 124 partial-visibility messages with dollar amounts matching quotes omitted from at least one recipient’s next-round historical display, across 302 recipient/quote candidate rows; 221 rows from 106 messages match the sender’s own quote. These are candidate matches, not verified factual relays: numeric agreement can be a proposal or coincidence, and historical omission alone does not establish that information was globally unavailable.
 
-Reviewed examples establish that accurate recipient-relevant reports exist. In seed 20 partial ON round 1, Jin reports his actual $84 ask, omitted from Kit and Nia's next-round histories. Leo likewise reports his actual $82 ask, omitted from Jin and Nia's histories. This demonstrates communication carrying information absent from direct quote displays. It does not establish global novelty or causal uptake. Other messages recommend coordinated reductions or narrate orders inconsistently with actual submissions. Factual reports, recommendations and action discrepancies must remain distinct. Exhaustive independently reviewed semantic coding remains pending.
+Selected recipient-level review distinguishes two examples. In seed 20, partial ON, round 1, Jin accurately reports his $84 ask to Kit and Nia. That quote is marked hidden from both recipients’ current and historical quote displays at receipt. This establishes an opportunity for the message to convey otherwise unavailable direct-display information; it does not show that either recipient relied on the message or that it caused a later action. Leo’s truthful $82 report to Jin and Nia has a different status: the quote is omitted from their historical display, but remains visible in the current order book. It is not evidence that the message supplied information unavailable in the recipients’ direct displays. Other reviewed messages include recommendations, coordination requests, and discrepancies between narrated intentions and recorded actions. Exhaustive semantic coding remains incomplete.
 
-### Distortion trajectories
+### Paired quote probe and failures
 
-Against historical Modal truthful controls, seed 20 ON increases mean executed price by $6.96 and adds two trades; OFF changes price by +$0.23 and loses one trade. Seed 21 ON changes price by −$2.96 and loses 15 trades; OFF changes price by −$1.25 and loses ten trades. These contrasts remain provider-confounded pending truthful Lambda results.
+All 48 paired-probe responses were accepted. In seed 21 round 5, the seller returned an $82 ask in all four quote conditions under each sampling seed (12 identical outcomes). Seed 20 round 2 remained around $82.50–$82.83; seed 20 round 5 numeric asks remained around $82.40–$82.65, with one truthful withdrawal. Seed 21 round 2 showed larger condition- and sampling-dependent changes, including withdrawals. This selected probe demonstrates heterogeneous responses to current quote perturbations, not a monotonic price-copying rule or a general information-integration capability. It has no repeated identical-prompt controls to estimate residual generation variability separately.
 
-In corrupted seed 20 ON, mean seller ask declines from $93.52 to $88.37 while mean buyer bid rises from $85.98 to $96.91. High- and low-ask groups coexist; repeated messages invoke genuine standing quotes around $96.90. The outcome is not uniform imitation of fabricated high values. Seed 21 ON instead approaches cost: mean asks decline from $88.95 to $81.26 and final-round mean trade price is $81.56, accompanied by repeated recommendations to lower prices. Buyers receive no directly corrupted views but can respond endogenously to real orders and trades. All four distortion markets fail the high-price gate.
-
-### Paired decisions
-
-All 48 probe responses are valid. Seed 21 round 5 returns $82 in every condition and sampling seed: twelve identical asks. Seed 20 round 2 remains around $82.50–$82.83; round 5 numeric asks remain around $82.40–$82.65, with one truthful withdrawal.
-
-Seed 21 round 2 is more sensitive. With sampling seed 901, truthful returns $92, masking and lowering return $85, and increasing produces withdrawal. With seed 902, truthful returns $90, masked $85, increased $89.99 and lowered $90. The remaining sampling seed includes a truthful withdrawal. Withdrawals are separate actions, not artificial numeric prices. The test shows heterogeneous responses without monotonic upward matching. It lacks repeated identical-prompt controls to separately estimate residual generation nondeterminism.
-
-### Technical failures
-
-Original-protocol seed 24 fails after three requests on an overlong scratchpad; a subsequent seed-25 attempt exhausts its two length-recovery attempts before accepting an action. Seed 26 is not attempted in those batches. Separate bounded-scratchpad repair attempts fail on request timeouts before completing a round. These attempts are retained and excluded from completed-market contrasts. Failures may select against verbose or unusual trajectories; they are not evidence of ordinary economic withdrawal.
+The original seed-24 factorial attempt failed after three requests because of an overlong scratchpad; a later seed-25 attempt exhausted its two length-recovery attempts before accepting an action. Seed 26 was not attempted in those batches. Separate bounded-scratchpad repairs timed out before completing a round. All failures remain retained and excluded from completed-market contrasts. Failure-related selection bias is possible.
 
 ## 4. Discussion
 
-Communication is more favourable to trade volume under partial visibility in each observed seed block. It is not a uniform trigger for anticompetitive prices. Candidate explanations include relaying missing facts, competitive recommendations, reassurance or shared interpretations of market demand. Accurate messages containing recipient-masked self-prices establish the existence of an information channel, but do not identify the mechanism behind the interaction.
+Across four completed matched seed blocks, the communication-enabled protocol had a more favourable effect on trade counts under partial rival-ask visibility than under full visibility. Verified message evidence shows that at least one accurate self-price report reached recipients whose current and historical quote displays both omitted the price. That establishes a plausible information-recovery opportunity, not causal mediation of the trade-count interaction. Because communication ON also changes prompt wording and required output fields, the factorial result should not be attributed solely to message content or information relay.
 
-Distortion and paired probes qualify a simple price-imitation account. Individual quote interventions sometimes change actions substantially and sometimes leave them invariant. This is consistent with dependence on surrounding state, but does not prove competent information integration, establish the dominant source or demonstrate superiority to humans. These are behavioural interventions, not internal mechanistic explanations.
-
-Coordination language also needs outcome context. Agents can explicitly coordinate price reductions, and their narratives can disagree with their orders. Neither cooperative language nor high mean prices alone establishes a cartel.
-
-A proposed 2×5 extension was deferred after benchmark review. With two unit-capacity $80 sellers and five $100 buyers, the implemented competitive and joint-profit reference prices both equal $100. The existing index cannot separate supply scarcity from coordinated restraint there. Concentration studies require a benchmark-separated design rather than interpreting ordinary excess demand as collusion.
+The primary study does not establish sustained high pricing under either visibility condition, and none of its markets passed the pre-specified gate. The supplementary distortion and paired-probe results are heterogeneous. They motivate more careful tests of information integrity and availability but do not establish that LLM sellers systematically imitate altered quotes, coordinate on supra-competitive prices, or possess superior information breadth.
 
 ## 5. Limitations
 
-There are four main seed blocks, two distortion seeds, one model and a short horizon. Failed runs may induce selection bias. Repairs change output constraints and cannot be silently pooled with original results. The analysis is exploratory, without a preregistered significance claim, equivalence conclusion or mediation estimate. Paired seeds do not guarantee deterministic outputs. Historical distortion controls use another provider; fresh controls are pending. Message extraction is complete but semantic coding is not exhaustive. Fixed history and ordering may contradict probe perturbations. No human comparison or model-internal intervention is attempted. External literature positioning and independent review are still needed before submission.
+The primary factorial estimate has four completed seed blocks, one model, ten rounds, and an exploratory analysis plan. Its illustrative interval is wide. Seeds are paired design blocks, not independent replications of the broader population of models, prompts, or markets. The communication treatment bundles received messages with changes to prompts and output requirements. Message counts are mechanical candidates, not exhaustive semantic labels; manual review is selective. Hidden from a display does not imply globally novel, remembered, or causally influential.
+
+The corruption comparison has only two seeds and distinct host instances. The paired probe uses four selected states, fixed histories and ordering, and no identical-prompt repetition controls. Neither identifies internal mechanisms. Technical failures can select which trajectories complete. The paired-probe bundle’s generated root manifest has a known limitation: its recorded host.log hash does not match the current file, and host_exit.json is unlisted. We preserve and disclose this condition rather than repairing the original manifest. No new tests or inference runs were conducted for this manuscript revision.
 
 ## 6. Conclusion
 
-Across four matched LLM auction seeds, communication's trade-volume effect is more positive under partial visibility, while price effects remain heterogeneous and the sustained-high-price criterion is never met. Corruption and paired probes reveal state-dependent responses rather than automatic price imitation. The informational environment merits attention when evaluating agent coordination; these results do not establish a general theory of collusion or superior LLM information breadth.
+In sixteen completed Qwen2.5-7B-Instruct double-auction markets, the communication-enabled protocol had a more favourable effect on trade completion under restricted rival-price visibility than under full visibility in each of four matched seed blocks. The mean interaction was +6.0 trades, with substantial uncertainty. A selected verified message conveyed a price absent from recipients’ current and historical displays, but message reliance and mediation were not established. Neither communication condition reliably met the sustained-high-price criterion. Supplemental quote-distortion and paired-decision probes show heterogeneous, state-dependent responses. These findings motivate further study of public information and communication as interacting features of agent markets; they do not establish a general effect or prove collusion.
 
-## Evidence and remaining completion work
+## Acknowledgment of pre-sprint work
 
-Main tables: market_outcomes.csv and paired_contrasts.csv. Source seals: evidence_inventory.json. Message evidence: messages.csv, recipient_hidden_price_candidates.csv and MESSAGE_REVIEW.md. Distortion review: ../distortion_trajectory_review_20261024/REVIEW.md. Paired results: ../paired_quote_e819adc5cf/. Remaining: incorporate verified Lambda controls, complete semantic review, add verified literature and author/venue details. No new paid inference was launched for this analysis.
+The underlying auction environment, agent framework, and initial endogenous-defection apparatus predate the sprint. Sprint-period work added the rival-quote visibility intervention, communication-by-visibility study, quote-distortion pilot, paired quote probe, analyses, and evidence package reported here. The repository README identifies the pre-existing components. No claim is made that the underlying auction implementation originated in the sprint.
+
+## Appendix: Limitations and Dual-Use / Ethical Considerations
+
+This work studies simulated seller agents in a bounded toy market. It does not establish collusion, intent, cartel membership, real-world market impact, or a general propensity for LLMs to collude. The primary result is an exploratory interaction in trade counts with four matched seed blocks; the high-price gate failed in the positive-control baseline and all completed factorial markets. Message matching does not prove information uptake or causal influence. Distortion and probe results are limited, heterogeneous observations.
+
+Research on message-mediated coordination could inform both monitoring and attempts to coordinate market behavior. We therefore report aggregate results, selected evidence needed to substantiate the claims, and reproducibility metadata while keeping full raw prompts/responses and verbose logs in a separately retained local evidence archive. We do not provide guidance for deploying price-coordination agents in real markets. Any real-world use of such systems would require legal, economic, and safety review, independent monitoring, and controls on private communications and order visibility. The experiments used simulated agents and did not interact with real buyers, sellers, or financial markets.
+
+## References
+
+[1] K. Agrawal, V. Teo, J. J. Vazquez, S. Kunnavakkam, V. Srikanth, and A. Liu. “Evaluating LLM Agent Collusion in Double Auctions.” arXiv:2507.01413, 2025. https://arxiv.org/abs/2507.01413
+
+[2] J. Keppo, Y. Li, G. Tsoukalas, and N. Yuan. “On the Fragility of AI Agent Collusion.” arXiv:2603.20281, 2026. https://arxiv.org/abs/2603.20281
+
+[3] S. Galanis. “Information Aggregation with AI Agents.” arXiv:2604.20050, 2026. https://arxiv.org/abs/2604.20050
