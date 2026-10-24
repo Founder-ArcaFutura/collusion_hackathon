@@ -1,0 +1,24 @@
+{
+  "full_on": {
+    "candidate_messages": 0,
+    "dollar_price_messages": 135,
+    "lexical_tags": {
+      "coordination": 58,
+      "liquidity": 87,
+      "lower_price": 94
+    },
+    "messages": 183,
+    "recipient_quote_candidate_rows": 0
+  },
+  "partial_on": {
+    "candidate_messages": 124,
+    "dollar_price_messages": 155,
+    "lexical_tags": {
+      "coordination": 79,
+      "liquidity": 86,
+      "lower_price": 75
+    },
+    "messages": 191,
+    "recipient_quote_candidate_rows": 302
+  }
+}

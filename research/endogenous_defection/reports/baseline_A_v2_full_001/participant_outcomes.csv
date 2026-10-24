@@ -1,0 +1,19 @@
+﻿seed,role,participant,trades,profit_usd
+10,buyer,Buyer Ana,5,83.98999999999998
+10,buyer,Buyer Jin,10,158.09999999999997
+10,buyer,Buyer Wei,8,129.39
+10,seller,Seller Raj,7,22.140000000000015
+10,seller,Seller Tara,6,27.190000000000012
+10,seller,Seller Theo,5,19.630000000000024
+10,seller,Seller Yara,4,9.730000000000018
+10,seller,Seller Zoe,1,9.829999999999998
+11,buyer,Buyer Ana,8,115.71
+11,buyer,Buyer Kai,1,16.909999999999997
+11,buyer,Buyer Leo,9,110.52000000000001
+11,buyer,Buyer Maya,9,102.42999999999999
+11,buyer,Buyer Theo,8,119.66999999999999
+11,seller,Seller Amir,4,30.629999999999995
+11,seller,Seller Jun,8,55.35000000000001
+11,seller,Seller Omar,6,35.58
+11,seller,Seller Tara,9,75.68000000000002
+11,seller,Seller Yara,8,37.519999999999996

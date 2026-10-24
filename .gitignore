@@ -20,3 +20,10 @@ literature/pdfs/
 
 # local model artifacts
 /checkpoints/
+
+# Local research outputs: publish only deliberately reviewed evidence exports.
+/.cache/
+/research/endogenous_defection/results/
+/research/endogenous_defection/analysis_outputs/
+*.egg-info/
+.pytest_cache/

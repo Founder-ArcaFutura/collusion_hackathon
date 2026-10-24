@@ -1,0 +1,65 @@
+{
+  "status": "DESIGN_ONLY_NO_PAID_EXECUTION",
+  "fresh_seeds": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "historical_seeds_excluded_from_new_confirmation": [
+    10,
+    11
+  ],
+  "market": "5 sellers / 5 buyers",
+  "rounds": 10,
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "cells_ready_for_review": [
+    {
+      "cell": "full_off",
+      "config": "full_off_REVIEW_ONLY.json",
+      "decisions": 600,
+      "maximum_requests": 1200,
+      "execution_enabled": false
+    },
+    {
+      "cell": "full_on",
+      "config": "full_on_REVIEW_ONLY.json",
+      "decisions": 600,
+      "maximum_requests": 1200,
+      "execution_enabled": false
+    }
+  ],
+  "partial_visibility_status": "IMPLEMENTED_OFFLINE_TESTED_LIVE_NOT_RUN",
+  "placebo_status": "NOT_IMPLEMENTED",
+  "baseline_pair": {
+    "decisions": 1200,
+    "maximum_requests": 2400
+  },
+  "complete_2x2": {
+    "decisions": 2400,
+    "maximum_requests": 4800
+  },
+  "optional_placebo_two_seeds_both_comms": {
+    "decisions": 400,
+    "maximum_requests": 800
+  },
+  "reserved_confirmation_seed_candidates": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111
+  ],
+  "sample_size_note": "Six paired markets per contrast is a planning tranche, not a power or equivalence guarantee",
+  "executable_runner": "research.endogenous_defection.information_study",
+  "analysis_runner": "research.endogenous_defection.study_analysis"
+}

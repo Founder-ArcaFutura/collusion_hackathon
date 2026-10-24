@@ -1,0 +1,55 @@
+{
+  "protocol_version": "factorial-v5-3x5-comms-off-bounded-format-recovery",
+  "execution_enabled": true,
+  "response_schema_version": "agent-action-json-v1",
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "allow_continuations": false,
+  "seeds": [
+    10,
+    11
+  ],
+  "seller_costs": [
+    80,
+    80,
+    80
+  ],
+  "buyer_values": [
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  "warmup_rounds": 10,
+  "post_rounds": 5,
+  "window": 5,
+  "min_qualifying_seeds": 2,
+  "high_price_index": 0.5,
+  "min_trades_per_round": 1,
+  "temperature": 0.7,
+  "max_tokens": 1200,
+  "provider_seed": false,
+  "numeric_string_actions": true,
+  "seller_comms_enabled": false,
+  "buyer_comms_enabled": false,
+  "hide_num_rounds": false,
+  "announced_rounds": 10,
+  "identity_mode": "upstream_seeded",
+  "initialization_seller_slots": 5,
+  "initial_seller_ask_range": [
+    96.25,
+    98.75
+  ],
+  "initial_buyer_bid_range": [
+    81.25,
+    83.75
+  ],
+  "conditions": [
+    {
+      "name": "control",
+      "kind": "control",
+      "cost_drop": 0
+    }
+  ],
+  "max_action_attempts": 2
+}

@@ -1,0 +1,23 @@
+{
+  "protocol_version": "pilot-v1",
+  "seeds": [0, 1, 2],
+  "seller_costs": [80, 80, 80],
+  "buyer_values": [100, 100],
+  "warmup_rounds": 15,
+  "post_rounds": 15,
+  "window": 5,
+  "min_qualifying_seeds": 2,
+  "high_price_index": 0.5,
+  "min_trades_per_round": 1,
+  "undercut_cents": 1,
+  "temperature": 0.7,
+  "max_tokens": 1200,
+  "provider_seed": false,
+  "seller_comms_enabled": true,
+  "conditions": [
+    {"name": "control", "kind": "control", "cost_drop": 0},
+    {"name": "cost_drop_5", "kind": "cost_shock", "cost_drop": 5},
+    {"name": "cost_drop_15", "kind": "cost_shock", "cost_drop": 15},
+    {"name": "scripted_drop_15", "kind": "scripted_defector", "cost_drop": 15}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "protocol_version": "live-smoke-v2-audited-decimal-string-actions-control-only",
+  "seeds": [0],
+  "seller_costs": [80, 80, 80],
+  "buyer_values": [100, 100],
+  "warmup_rounds": 4,
+  "post_rounds": 4,
+  "window": 3,
+  "min_qualifying_seeds": 1,
+  "max_tokens": 800,
+  "numeric_string_actions": true,
+  "conditions": [
+    {"name": "control", "kind": "control", "cost_drop": 0}
+  ]
+}

@@ -1,0 +1,87 @@
+[
+  {
+    "seal_sha256": "41b3e6cba18c1925ec3de34d76a2c47cce6b7d1a2c4d7c99da7e5a2cbfb566c3",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_20_full_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "eb643373a47824165e4acaaac0f7f54db7e311f773f4544ecff40dc349444d74",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_20_full_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "ed5ba2eb1be8c3d55f6916e67921db059e86be6e19297f46186c070e59e40894",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_20_partial_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "dd4555a0427adb1dd78e585c56e7cf5831a698850f92623fe7c38c207a0caeee",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_20_partial_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "2192be22bb7d7212453c9162bcc234cb36c5e12383d6d33ac6280cb64856e266",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_21_full_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "95a310ad86299263b66de57d08065ba80ab3175ed7f0204bc6bbdd014597e64a",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_21_full_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "5c5f729cbdbff9fd60066b08d6fa47881fc1f3a101a6c8d06bf05c7c6fd03799",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_21_partial_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "83f020589c89e52e2a12dbb3c8293cca88cc2c9bbd95a2d1bfe33db338290b9d",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_095806_35d3842f\\cells\\seed_21_partial_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "e1abebb66b5474754187a8d4423e24cee4b2f2ab509680bf6a3184cd35251211",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_22_full_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "0b310a738399280f90fb8ad29785b3b1d03fe26e1f3e025ae58fb6447bb6daa3",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_22_full_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "8d6cbd6f6bbd2e9712f19bc175ab744a62f15c346354c293bb86ab73d39388bd",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_22_partial_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "60645982fd0d008758a02fa40e7084eb56e05abf377604d234c92fbe49f79e64",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_22_partial_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "11abff91fe2ab633f3b690360279ba9e39f624413acc0da2f993a93ac3aad607",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_23_full_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "02c2f9fbff3817b36c83d70df3bd7314584ea4b0286f889290689b5b607b4720",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_23_full_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "bdab3f4b2d67d884a8e008705b1e5f6995c6b39076a2ec80b2ae93275ab628c3",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_23_partial_off",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "2ad1b5b528b802eb33ff2f48cb3fe7ff1e416466ca4266e66666a49acffe8245",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_23_partial_on",
+    "status": "complete"
+  },
+  {
+    "seal_sha256": "ae8b95a34471b0280a51297a4eaaed59f4d63f548fb023899479d0f548527009",
+    "source": "G:\\collusion_hackathon\\output\\information_study_20261024_122407_31b6457e\\cells\\seed_24_full_on",
+    "status": "failed"
+  }
+]

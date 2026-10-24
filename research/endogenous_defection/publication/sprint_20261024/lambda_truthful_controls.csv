@@ -1,0 +1,5 @@
+seed,cell,status,rounds,trades,mean_trade_price,mean_ask
+20,full_on,complete,10,26,85.35192307692307,83.7325
+20,full_off,complete,10,27,82.85,82.80535
+21,full_off,complete,10,34,88.91088235294117,86.0442
+21,full_on,complete,10,35,86.62342857142858,84.35136666666666

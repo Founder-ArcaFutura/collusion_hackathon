@@ -1,0 +1,136 @@
+{
+  "prepared_date": "2026-10-23",
+  "currency": "USD",
+  "paid_execution_performed": true,
+  "execution_note": "Two incomplete Baseline A attempts remain preserved as technical failures. Guided v2 is approved for a two-request buyer/seller live contract test and, only if that test passes, the planned 200-request two-seed diagnostic. Baseline B remains blocked.",
+  "approval_required": true,
+  "rate_sources": {
+    "modal": "https://modal.com/pricing",
+    "gpt41": "https://developers.openai.com/api/docs/models/gpt-4.1"
+  },
+  "rate_assumptions": {
+    "a10_gpu_per_second": 0.000306,
+    "cpu_core_per_second": 1.31e-05,
+    "ram_gib_per_second": 2.22e-06,
+    "gpt41_input_per_million": 2,
+    "gpt41_output_per_million": 8,
+    "cached_input_discount_assumed": false
+  },
+  "A": {
+    "config": "configs/baseline_A_qwen_v1.json",
+    "approved_config_sha256": "f7bd94f3dcfef02406a7034b7db70f303f590ea0e44b22fadbc13a5c76511a92",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "calls": 200,
+    "max_generated_tokens": 240000,
+    "benchmark": {
+      "ce_low": 80.0,
+      "ce_high": 100.0,
+      "ce_mid": 90.0,
+      "ce_quantity": 5,
+      "jpm_price": 100.0,
+      "jpm_quantity": 5,
+      "efficient_surplus": 100.0
+    },
+    "scenarios": [
+      {
+        "scenario": "lower",
+        "seconds_per_call": 12,
+        "startup_seconds": 120,
+        "billed_seconds_assumed": 2520,
+        "gpu_usd": 0.7711,
+        "cpu_1_core_ram_16_gib_usd": 0.1225,
+        "total_usd_assuming_1_core_16_gib": 0.8936
+      },
+      {
+        "scenario": "higher",
+        "seconds_per_call": 25,
+        "startup_seconds": 600,
+        "billed_seconds_assumed": 5600,
+        "gpu_usd": 1.7136,
+        "cpu_1_core_ram_16_gib_usd": 0.2723,
+        "total_usd_assuming_1_core_16_gib": 1.9859
+      }
+    ],
+    "proposed_planning_envelope_usd": 3,
+    "regional_modifier_sensitivity": {
+      "listed_range": [1.15, 1.75],
+      "estimated_low_usd": 1.03,
+      "estimated_high_usd": 3.48,
+      "covers_proposed_envelope": false,
+      "note": "Applies Modal's currently listed regional multiplier range to the base-rate scenarios; actual region/allocation is unverified."
+    },
+    "execution_enabled": true
+  },
+  "A_guided_v2": {
+    "config": "configs/baseline_A_qwen_v2_guided.json",
+    "approved_config_sha256": "9f041d71365f72c4c4590254603d70c364d9b671bec228287deed65d1c42ce2d",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "protocol_version": "baseline-A-v2-guided-json-archive-5x5-qwen",
+    "calls": 200,
+    "max_generated_tokens": 240000,
+    "proposed_planning_envelope_usd": 3,
+    "execution_enabled": true,
+    "status": "approved by explicit user authorization on 2026-10-23; two-request live contract test first; 200-request diagnostic only if contract test passes",
+    "approval_record": {
+      "approved_at": "2026-10-23",
+      "approval_source": "explicit user authorization in Codex conversation",
+      "approved_config_sha256": "9f041d71365f72c4c4590254603d70c364d9b671bec228287deed65d1c42ce2d",
+      "authorized_actions": [
+        "two-request buyer/seller live contract test",
+        "200-request two-seed diagnostic only after contract test passes"
+      ],
+      "request_ceiling": 200,
+      "ready_timeout_seconds": 900,
+      "contract_run_timeout_seconds": 300,
+      "diagnostic_run_timeout_seconds": 7200
+    }
+  },
+  "B": {
+    "config": "configs/baseline_B_reference_v1.json",
+    "model": "gpt-4.1-2025-04-14",
+    "calls": 900,
+    "max_generated_tokens": 3600000,
+    "benchmark": {
+      "ce_low": 80.0,
+      "ce_high": 100.0,
+      "ce_mid": 90.0,
+      "ce_quantity": 5,
+      "jpm_price": 100.0,
+      "jpm_quantity": 5,
+      "efficient_surplus": 100.0
+    },
+    "scenarios": [
+      {
+        "scenario": "lower",
+        "mean_input_tokens": 2000,
+        "mean_output_tokens": 300,
+        "usd_at_openai_standard_rates": 5.76
+      },
+      {
+        "scenario": "higher",
+        "mean_input_tokens": 8000,
+        "mean_output_tokens": 600,
+        "usd_at_openai_standard_rates": 18.72
+      },
+      {
+        "scenario": "stress",
+        "mean_input_tokens": 12000,
+        "mean_output_tokens": 4000,
+        "usd_at_openai_standard_rates": 50.4
+      }
+    ],
+    "proposed_planning_envelope_usd": 60,
+    "execution_enabled": false,
+    "model_status": "Official page marks model deprecated; exact snapshot availability unverified",
+    "local_gpu_cost_usd": 0
+  },
+  "limits": [
+    "Scenarios are estimates, not charges or dollar caps.",
+    "The $3 A envelope does not cover the high scenario at Modal's maximum listed 1.75x regional modifier.",
+    "Request and output caps are enforceable; cumulative input/dollar caps are not implemented.",
+    "CPU/RAM, region, startup, networking and actual provider quotes can change cost.",
+    "Input histories can exceed assumptions; stop and review before exceeding the proposed envelope.",
+    "Modal credit balance and API credit balance are unknown and separate.",
+    "Reserve at least 50 percent of verified remaining Modal credit for replication/contingency."
+  ]
+}

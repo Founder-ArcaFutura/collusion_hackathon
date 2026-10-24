@@ -1,0 +1,8 @@
+{
+  "protocol_version": "smoke-v1-not-research",
+  "seeds": [0, 1],
+  "warmup_rounds": 4,
+  "post_rounds": 6,
+  "window": 3,
+  "min_qualifying_seeds": 2
+}

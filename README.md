@@ -1,5 +1,14 @@
 # Hackathon NY starter repo
 
+## Fork research: endogenous cartel defection
+
+[`research/endogenous_defection/`](research/endogenous_defection/) adds a gated,
+checkpoint-matched private cost-shock pilot around the original double-auction
+harness, with preregistration, offline validation, provenance and paired analysis.
+The exploratory sprint's live results, retained failures and evidence limits are
+documented in its [independent-review packet](research/endogenous_defection/publication/sprint_20261024/README.md).
+Start with the pilot's [quick start](research/endogenous_defection/README.md).
+
 Ten research codebases on LLM agents, collusion and multi-agent coordination, bundled so a
 team can clone once and start hacking. Every project runs on a normal laptop with **no GPU**,
 calling models **through a hosted inference provider** (Nebius or OpenRouter), configured once at the repo root. Some have other local

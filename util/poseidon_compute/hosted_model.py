@@ -27,10 +27,13 @@ import time
 import json
 import argparse
 import contextlib
+import signal
 import subprocess
 import urllib.request
 import urllib.error
 import pathlib
+
+from .runtime_metadata import RUNTIME_HEADER, validate_serving_runtime
 
 
 class ModelAccessError(RuntimeError):
@@ -97,7 +100,20 @@ def _wait_ready(url, api_key, timeout):
         try:
             with urllib.request.urlopen(req, timeout=10) as r:
                 if r.status == 200:
-                    return True
+                    raw_runtime = r.headers.get(RUNTIME_HEADER)
+                    if not raw_runtime:
+                        raise RuntimeError(
+                            "Modal endpoint is ready but did not report serving dependency versions"
+                        )
+                    try:
+                        runtime = json.loads(raw_runtime)
+                    except json.JSONDecodeError as exc:
+                        raise RuntimeError(
+                            "Modal endpoint returned invalid serving dependency metadata"
+                        ) from exc
+                    return validate_serving_runtime(runtime)
+        except RuntimeError:
+            raise
         except Exception as e:  # noqa: BLE001 - cold start returns connection errors / 503s
             last = e
         time.sleep(5)
@@ -126,17 +142,31 @@ def hosted_model(model=None, gpu=None, api_key=None, ready_timeout=900):
     served_model = os.environ.get("MODAL_SERVE_MODEL", modal_serve.MODEL)
     # Fail fast with an actionable message if the model is gated and we lack access, before booting Modal.
     _check_hf_access(served_model)
-    saved = {k: os.environ.get(k) for k in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL")}
+    saved = {
+        k: os.environ.get(k)
+        for k in (
+            "LLM_BASE_URL",
+            "LLM_API_KEY",
+            "LLM_MODEL",
+            "MODAL_SERVING_RUNTIME",
+        )
+    }
     with modal.enable_output(), modal_serve.app.run():
         url = modal_serve.serve.get_web_url()
         os.environ["LLM_BASE_URL"] = url.rstrip("/") + "/v1"
-        if api_key:
-            os.environ["LLM_API_KEY"] = api_key
+        os.environ["LLM_API_KEY"] = modal_serve.ENDPOINT_API_KEY
         os.environ["LLM_MODEL"] = served_model
         print(f"[hosted_model] up: {os.environ['LLM_BASE_URL']}  (model {served_model}) — warming up...", flush=True)
-        _wait_ready(url, api_key, ready_timeout)
-        print("[hosted_model] ready.", flush=True)
         try:
+            runtime = _wait_ready(url, modal_serve.ENDPOINT_API_KEY, ready_timeout)
+            os.environ["MODAL_SERVING_RUNTIME"] = json.dumps(
+                runtime, sort_keys=True, separators=(",", ":")
+            )
+            print(
+                "[hosted_model] ready; serving runtime "
+                + json.dumps(runtime, sort_keys=True),
+                flush=True,
+            )
             yield url
         finally:
             for k, v in saved.items():
@@ -153,14 +183,51 @@ def main():
     ap.add_argument("--gpu", default=None, help="Modal GPU, e.g. A10G / A100-40GB / H100")
     ap.add_argument("--api-key", default=None, help="bearer key to require on the endpoint (optional)")
     ap.add_argument("--ready-timeout", type=int, default=900)
+    ap.add_argument(
+        "--run-timeout",
+        type=int,
+        default=7200,
+        help="maximum seconds for the wrapped command after model readiness (default: 7200)",
+    )
     ap.add_argument("cmd", nargs=argparse.REMAINDER,
                     help="the experiment command, after `--` (e.g. -- bash -c '...')")
     args = ap.parse_args()
     cmd = args.cmd[1:] if args.cmd and args.cmd[0] == "--" else args.cmd
     if not cmd:
         ap.error("provide a command after `--`, e.g.  -- bash -c 'cd proj && python ...'")
-    with hosted_model(model=args.model, gpu=args.gpu, api_key=args.api_key, ready_timeout=args.ready_timeout):
-        rc = subprocess.run(cmd, env=os.environ).returncode
+    if args.ready_timeout <= 0 or args.run_timeout <= 0:
+        ap.error("--ready-timeout and --run-timeout must be positive")
+    try:
+        with hosted_model(model=args.model, gpu=args.gpu, api_key=args.api_key, ready_timeout=args.ready_timeout):
+            process = subprocess.Popen(
+                cmd,
+                env=os.environ,
+                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            )
+            try:
+                rc = process.wait(timeout=args.run_timeout)
+            except subprocess.TimeoutExpired:
+                # Give the experiment a chance to run its failure/finally path and
+                # seal its partial evidence bundle before forcing it to exit.
+                interrupt = (
+                    signal.CTRL_BREAK_EVENT
+                    if os.name == "nt"
+                    else signal.SIGINT
+                )
+                process.send_signal(interrupt)
+                try:
+                    process.wait(timeout=30)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+                raise
+    except subprocess.TimeoutExpired:
+        print(
+            f"[poseidon-host] wrapped command exceeded {args.run_timeout}s; stopped it and the Modal app",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(124)
     sys.exit(rc)
 
 
